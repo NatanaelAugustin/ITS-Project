@@ -23,4 +23,10 @@ internal class UserService
         var _entity = await _context.Users.FindAsync(predicate);
         return _entity!;
     }
+
+    public async Task<IEnumerable<UserEntity>> GetAllAsync()
+    {
+        return await _context.Users.ToListAsync();
+    }
+
 }
