@@ -11,7 +11,7 @@ internal class CaseEntity
     public DateTime Modified { get; set; } = DateTime.Now;
 
 
-    public int StatusId { get; set; }
+    public int StatusId { get; set; } = 1;
     public StatusEntity Status { get; set; } = null!;
 
     public int UserId { get; set; }
