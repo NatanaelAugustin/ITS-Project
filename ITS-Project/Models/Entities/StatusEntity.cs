@@ -1,6 +1,4 @@
-﻿
-
-namespace ITS_Project.Models.Entities;
+﻿namespace ITS_Project.Models.Entities;
 
 internal class StatusEntity
 {

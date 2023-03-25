@@ -1,5 +1,8 @@
-﻿namespace ITS_Project.Models.Entities;
+﻿using Microsoft.EntityFrameworkCore;
 
+namespace ITS_Project.Models.Entities;
+
+[Index(nameof(Email), IsUnique = true)]
 internal class UserEntity
 {
     public int Id { get; set; }
