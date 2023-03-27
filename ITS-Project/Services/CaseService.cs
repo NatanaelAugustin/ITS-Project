@@ -8,14 +8,21 @@ namespace ITS_Project.Services;
 internal class CaseService
 {
     private readonly DataContext _context = new();
+    private readonly UserService _userService = new();
+    private readonly StatusService _statusService = new();
 
-    public async Task CreateAsync(CaseEntity entity)
+    public async Task CreateAsync(CaseEntity caseEntity)
     {
-        await _context.AddAsync(entity);
-        await _context.SaveChangesAsync();
+        if (await _userService.GetAsync(userEntity => userEntity.Id == caseEntity.UserId) != null &&
+             await _statusService.GetAsync(statusEntity => statusEntity.Id == caseEntity.StatusId) != null)
+
+        {
+            _context.Add(caseEntity);
+            await _context.SaveChangesAsync();
+        }
     }
 
-    public async Task<IEnumerable<CaseEntity>> GetActiveAsync()
+    public async Task<IEnumerable<CaseEntity>> GetAllActiveCasesAsync()
     {
         return await _context.Cases
             .Include(x => x.Comments)
@@ -26,7 +33,7 @@ internal class CaseService
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<CaseEntity>> GetAllAsync()
+    public async Task<IEnumerable<CaseEntity>> GetAllCasesAsync()
     {
         return await _context.Cases
             .Include(x => x.Comments)
@@ -39,31 +46,40 @@ internal class CaseService
     public async Task<CaseEntity> GetAsync(Expression<Func<CaseEntity, bool>> predicate)
     {
 
-        var _entity = await _context.Cases
+        var _caseEntity = await _context.Cases
+            .Include(x => x.Description)
             .Include(x => x.Comments)
             .Include(x => x.User)
             .Include(x => x.Status)
             .FirstOrDefaultAsync(predicate);
 
-        return _entity!;
+        return _caseEntity!;
     }
 
-    public async Task UpdateCaseStatusAsync(int caseId, int statusId)
+    public async Task<CaseEntity> UpdateCaseStatusAsync(Expression<Func<CaseEntity, bool>> predicate)
     {
-        var _entity = await _context.Cases.FindAsync(caseId);
-        if (_entity != null)
+        var _caseEntity = await _context.Cases.FirstOrDefaultAsync(predicate);
+        if (_caseEntity != null)
         {
-            _entity.Modified = DateTime.Now;
-            _entity.StatusId = statusId;
-            _context.Update(_entity);
+            if (_caseEntity.StatusId == 1)
+            {
+                _caseEntity.StatusId = 2;
+
+            }
+            else if (_caseEntity.StatusId == 2)
+            {
+                _caseEntity.StatusId = 3;
+            }
+            else
+            {
+                _caseEntity.StatusId = 2;
+            }
+
+
+            _context.Update(_caseEntity);
             await _context.SaveChangesAsync();
         }
-    }
 
-    public async Task CreateCommentAsync(CommentEntity comment)
-    {
-        await _context.AddAsync(comment);
-        await _context.SaveChangesAsync();
-        await UpdateCaseStatusAsync(comment.CaseId, 2);
+        return _caseEntity!;
     }
 }

@@ -9,23 +9,23 @@ internal class UserService
 {
     private readonly DataContext _context = new();
 
-    public async Task<UserEntity> CreateAsync(UserEntity entity)
+    public async Task<UserEntity> CreateAsync(UserEntity userEntity)
     {
-        var _entity = await _context.Users.FirstOrDefaultAsync(x => x.Email == entity.Email);
-        if (_entity == null)
+        var _userEntity = await GetAsync(x => x.Email == userEntity.Email);
+        if (_userEntity == null)
         {
-            await _context.AddAsync(entity);
+            _userEntity = userEntity;
+            _context.Add(_userEntity);
             await _context.SaveChangesAsync();
-            return entity;
         }
 
-        return _entity;
+        return _userEntity;
     }
 
     public async Task<UserEntity> GetAsync(Expression<Func<UserEntity, bool>> predicate)
     {
-        var _entity = await _context.Users.FirstOrDefaultAsync(predicate);
-        return _entity!;
+        var _userEntity = await _context.Users.FirstOrDefaultAsync(predicate);
+        return _userEntity!;
     }
 
     public async Task<IEnumerable<UserEntity>> GetAllAsync()
