@@ -17,7 +17,7 @@ internal class DataContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\natan\Programmering\C#\Databas\ITS-Project\ITS-Project\Contexts\local-its-db.mdf;Integrated Security=True;Connect Timeout=30");
+        optionsBuilder.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\natan\Programmering\Database\ITS-Project\Contexts\its-database.mdf;Integrated Security=True");
     }
 
     public DbSet<StatusEntity> Statuses { get; set; }
