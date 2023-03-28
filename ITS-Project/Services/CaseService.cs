@@ -59,6 +59,7 @@ internal class CaseService
     public async Task<CaseEntity> UpdateCaseStatusAsync(Expression<Func<CaseEntity, bool>> predicate)
     {
         var _caseEntity = await _context.Cases.FirstOrDefaultAsync(predicate);
+
         if (_caseEntity != null)
         {
             if (_caseEntity.StatusId == 1)

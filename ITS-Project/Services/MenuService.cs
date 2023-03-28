@@ -13,7 +13,9 @@ internal class MenuService
         Console.WriteLine("################## Welcome to Natanaels Issues tracking system ###############");
         Console.WriteLine("1. Show all active issues");
         Console.WriteLine("2. Show all issues");
-        Console.WriteLine("3. Create new issue");
+        Console.WriteLine("3. Search for specfific case");
+        Console.WriteLine("4. Create new issue");
+        Console.WriteLine("5. Close program");
         Console.Write("choose one of the options above:  ");
         var option = Console.ReadLine();
 
@@ -33,10 +35,15 @@ internal class MenuService
                   break;
             */
 
-
             case "4":
                 await NewCaseAsync();
                 break;
+
+
+            case "5":
+                Environment.Exit(1);
+                break;
+
 
 
             default:
@@ -57,7 +64,7 @@ internal class MenuService
             Console.WriteLine($"Created at: {_case.Created}");
             Console.WriteLine($"Case ID: {_case.Id}");
             Console.WriteLine($"Creator: {_case.User} ");
-            Console.WriteLine($"Descriptiom: {_case.Description}");
+            Console.WriteLine($"Description: {_case.Description}");
             Console.WriteLine($"Modified at: {_case.Modified} ");
             Console.WriteLine($"Comments: {_case.Comments}");
             Console.WriteLine("");
@@ -83,13 +90,17 @@ internal class MenuService
 
     /*
     private async Task SearchCaseAsync()
-    {
+    {   
+    
+        Console.Clear();
+        Console.WriteLine("################## Search Specific Issues ###############)
+
         Console.Write("Enter a case ID: ");
         var userId = Convert.ToInt32(Console.ReadLine());
 
         if (userId != null)
         {
-            var cases = await _caseService.GetAsync();
+            var _cases = await _caseService.GetAsync();
             if (cases != null)
             {
                 Console.WriteLine($"User ID: {cases}");
@@ -97,16 +108,17 @@ internal class MenuService
                 Console.WriteLine($"Status: {_case.Status}");
                 Console.WriteLine($"case number: {_case.Id}");
 
-
             }
             else
             {
                 Console.Clear();
-                Console.WriteLine($"There's one with this user ID {userId}");
-
+                Console.WriteLine($"There's one with this user ID {userId}")
             }
         }
-    } */
+    } 
+    */
+
+
     private async Task NewCaseAsync()
     {
         Console.Clear();
