@@ -1,7 +1,6 @@
 ﻿using ITS_Project.Contexts;
 using ITS_Project.Models.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace ITS_Project.Services;
 
@@ -11,33 +10,31 @@ internal class StatusService
 
     public async Task InitAsync()
     {
-        if (!await _context.Statuses.AnyAsync())
+        var statusStates = new List<StatusEntity>();
         {
-            var statusStates = new List<StatusEntity>();
-            {
-                new StatusEntity() { StatusType = "Ej påbörjad" };
+            new StatusEntity() { Id = 1, StatusType = "Not engaged" };
 
-                new StatusEntity() { StatusType = "Avklarad" };
+            new StatusEntity() { Id = 2, StatusType = "Finished" };
 
-                new StatusEntity() { StatusType = "Pågående" };
+            new StatusEntity() { Id = 3, StatusType = "Ongoing" };
 
-            };
+        };
 
-            _context.AddRange(statusStates);
+        await _context.AddRangeAsync(statusStates);
 
-            await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
 
-        }
+
     }
     public async Task<IEnumerable<StatusEntity>> GetAllAsync()
     {
         return await _context.Statuses.ToListAsync();
     }
 
-    public async Task<StatusEntity> GetAsync(Expression<Func<StatusEntity, bool>> predicate)
+    public async Task<StatusEntity> GetAsync(int id)
     {
-        var _statusEntity = await _context.Statuses.FirstOrDefaultAsync(predicate);
-        return _statusEntity!;
+
+        return await _context.Statuses.FirstOrDefaultAsync(x => x.Id == id) ?? null!;
 
     }
 }

@@ -2,7 +2,7 @@
 
 internal class CreateUser
 {
-    public CreateUser(string firstName, string lastName, string email, int phoneNumber)
+    public CreateUser(string firstName, string lastName, string email, string phoneNumber)
     {
         FirstName = firstName;
 
@@ -18,5 +18,5 @@ internal class CreateUser
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Email { get; set; }
-    public int PhoneNumber { get; set; }
+    public string PhoneNumber { get; set; }
 }

@@ -1,25 +1,26 @@
 ﻿using ITS_Project.Contexts;
+using ITS_Project.Models;
 using ITS_Project.Models.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace ITS_Project.Services;
 
 internal class CaseService
 {
     private readonly DataContext _context = new();
-    private readonly UserService _userService = new();
-    private readonly StatusService _statusService = new();
 
-    public async Task CreateAsync(CaseEntity caseEntity)
+    public async Task<CaseEntity> CreateAsync(CreateCase createCase)
     {
-        if (await _userService.GetAsync(userEntity => userEntity.Id == caseEntity.UserId) != null &&
-             await _statusService.GetAsync(statusEntity => statusEntity.Id == caseEntity.StatusId) != null)
-
+        var caseEntity = new CaseEntity
         {
-            _context.Add(caseEntity);
-            await _context.SaveChangesAsync();
-        }
+            UserId = createCase.UserId,
+            Subject = createCase.Subject,
+            Description = createCase.Description,
+        };
+        await _context.AddAsync(caseEntity);
+        await _context.SaveChangesAsync();
+
+        return caseEntity;
     }
 
     public async Task<IEnumerable<CaseEntity>> GetAllCasesAsync()
@@ -31,45 +32,39 @@ internal class CaseService
             .OrderByDescending(x => x.Created)
             .ToListAsync();
     }
-
-    public async Task<CaseEntity> GetAsync(Expression<Func<CaseEntity, bool>> predicate)
+    // TODO: hmmm se hur det har blir 
+    public async Task<CaseEntity> GetAsync(Guid id)
     {
-
-        var _caseEntity = await _context.Cases
-            .Include(x => x.Description)
+        return await _context.Cases!
             .Include(x => x.Comments)
             .Include(x => x.User)
             .Include(x => x.Status)
-            .FirstOrDefaultAsync(predicate);
+            .FirstOrDefaultAsync(x => x.Id == id) ?? null!;
 
-        return _caseEntity!;
     }
 
-    public async Task<CaseEntity> UpdateCaseStatusAsync(Expression<Func<CaseEntity, bool>> predicate)
+    public async Task<CaseEntity> UpdateCaseAsync(Guid id, int statusId)
     {
-        var _caseEntity = await _context.Cases.FirstOrDefaultAsync(predicate);
+        var caseEntity = await GetAsync(id);
 
-        if (_caseEntity != null)
-        {
-            if (_caseEntity.StatusId == 1)
-            {
-                _caseEntity.StatusId = 2;
+        if (!await _context.Statuses.AnyAsync(x => x.Id == statusId))
+            return null!;
 
-            }
-            else if (_caseEntity.StatusId == 2)
-            {
-                _caseEntity.StatusId = 3;
-            }
-            else
-            {
-                _caseEntity.StatusId = 2;
-            }
+        caseEntity.StatusId = statusId;
 
+        _context.Update(caseEntity);
+        await _context.SaveChangesAsync();
 
-            _context.Update(_caseEntity);
-            await _context.SaveChangesAsync();
-        }
+        return caseEntity!;
+    }
 
-        return _caseEntity!;
+    public async Task<CaseEntity> DeleteCaseAsync(Guid id)
+    {
+        var caseEntity = await GetAsync(id);
+
+        _context.Remove(caseEntity);
+        await _context.SaveChangesAsync();
+
+        return caseEntity;
     }
 }
