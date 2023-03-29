@@ -11,10 +11,9 @@ internal class MenuService
     {
         Console.Clear();
         Console.WriteLine("################## Welcome to Natanaels Issues tracking system ###############");
-        Console.WriteLine("1. Show all active issues");
-        Console.WriteLine("2. Show all issues");
-        Console.WriteLine("3. Search for specfific case");
-        Console.WriteLine("4. Create new issue");
+        Console.WriteLine("1. Show all issues");
+        Console.WriteLine("2. Search for specfific case");
+        Console.WriteLine("3. Create new issue");
         Console.WriteLine("5. Close program");
         Console.Write("choose one of the options above:  ");
         var option = Console.ReadLine();
@@ -22,25 +21,20 @@ internal class MenuService
         switch (option)
         {
             case "1":
-                await AllActiveCasesAsync();
-                break;
-
-
-            case "2":
                 await AllCasesAsync();
                 break;
 
-            /*  case "3":
-                  await SearchCaseAsync();
-                  break;
+            /*    case "2":
+                    await SearchCaseAsync();
+                    break;
             */
 
-            case "4":
+            case "3":
                 await NewCaseAsync();
                 break;
 
 
-            case "5":
+            case "4":
                 Environment.Exit(1);
                 break;
 
@@ -48,26 +42,9 @@ internal class MenuService
 
             default:
                 Console.Clear();
-                Console.Write("please enter a valid input (1 - 5)");
+                Console.Write("please enter a valid input (1 - 4)");
                 break;
 
-        }
-    }
-
-    private async Task AllActiveCasesAsync()
-    {
-        Console.Clear();
-        Console.WriteLine("################## Active Issues ###############");
-        foreach (var _case in await _caseService.GetAllActiveCasesAsync())
-        {
-            Console.WriteLine($"Status {_case.Status.StatusType} ");
-            Console.WriteLine($"Created at: {_case.Created}");
-            Console.WriteLine($"Case ID: {_case.Id}");
-            Console.WriteLine($"Creator: {_case.User} ");
-            Console.WriteLine($"Description: {_case.Description}");
-            Console.WriteLine($"Modified at: {_case.Modified} ");
-            Console.WriteLine($"Comments: {_case.Comments}");
-            Console.WriteLine("");
         }
     }
 
@@ -82,42 +59,41 @@ internal class MenuService
             Console.WriteLine($"Case ID: {_case.Id}");
             Console.WriteLine($"Creator: {_case.User} ");
             Console.WriteLine($"Descriptiom: {_case.Description}");
-            Console.WriteLine($"Modified at: {_case.Modified} ");
             Console.WriteLine($"Comments: {_case.Comments}");
             Console.WriteLine("");
         }
     }
 
-    /*
-    private async Task SearchCaseAsync()
-    {   
-    
-        Console.Clear();
-        Console.WriteLine("################## Search Specific Issues ###############)
+    /* private async Task SearchCaseAsync()
+     {
+         Console.Clear();
+         Console.WriteLine("################## Search Specific Issue ###############");
+         Console.Write("Enter a case ID: ");
+         var caseId = Convert.ToInt32(Console.ReadLine());
 
-        Console.Write("Enter a case ID: ");
-        var userId = Convert.ToInt32(Console.ReadLine());
+         var _case = await _caseService.GetAsync(caseId);
+         if (_case != null)
+         {
+             Console.WriteLine($"Status: {_case.Status.StatusType}");
+             Console.WriteLine($"Created at: {_case.Created}");
+             Console.WriteLine($"Case ID: {_case.Id}");
+             Console.WriteLine($"Creator: {_case.User}");
+             Console.WriteLine($"Description: {_case.Description}");
+             Console.WriteLine($"Modified at: {_case.Modified}");
+             Console.WriteLine($"Comments:");
 
-        if (userId != null)
-        {
-            var _cases = await _caseService.GetAsync();
-            if (cases != null)
-            {
-                Console.WriteLine($"User ID: {cases}");
-                Console.WriteLine($"User name: {_case}");
-                Console.WriteLine($"Status: {_case.Status}");
-                Console.WriteLine($"case number: {_case.Id}");
-
-            }
-            else
-            {
-                Console.Clear();
-                Console.WriteLine($"There's one with this user ID {userId}")
-            }
-        }
-    } 
+             foreach (var comment in _case.Comments)
+             {
+                 Console.WriteLine($"{comment.Author} ({comment.Created}): {comment.Comment}");
+             }
+         }
+         else
+         {
+             Console.Clear();
+             Console.WriteLine($"There's no case with ID {caseId}");
+         }
+     }
     */
-
 
     private async Task NewCaseAsync()
     {
@@ -139,7 +115,7 @@ internal class MenuService
 
         await _userService.CreateAsync(_userEntity);
         await _caseService.CreateAsync(_caseEntity);
-        await AllActiveCasesAsync();
+        await AllCasesAsync();
     }
 
 }

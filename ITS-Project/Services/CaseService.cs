@@ -22,17 +22,6 @@ internal class CaseService
         }
     }
 
-    public async Task<IEnumerable<CaseEntity>> GetAllActiveCasesAsync()
-    {
-        return await _context.Cases
-            .Include(x => x.Comments)
-            .Include(x => x.User)
-            .Include(x => x.Status)
-            .Where(x => x.StatusId != 3)
-            .OrderByDescending(x => x.Created)
-            .ToListAsync();
-    }
-
     public async Task<IEnumerable<CaseEntity>> GetAllCasesAsync()
     {
         return await _context.Cases
