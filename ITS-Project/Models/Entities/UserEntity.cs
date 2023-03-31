@@ -12,5 +12,3 @@ internal class UserEntity
     public string PhoneNumber { get; set; } = null!;
     public ICollection<CaseEntity> Cases { get; set; } = new List<CaseEntity>();
 }
-
-

@@ -14,6 +14,7 @@ internal class MenuService
     private readonly CaseService _caseService = new();
 
 
+
     private static string CheckIfValid(string prompt)
     {
         while (true)
@@ -140,7 +141,7 @@ internal class MenuService
         Console.WriteLine("{0,-5}{1,-30}{2,-20}{3,-20}{4,-20}", "No.", "Subject", "Status", "User", "Created");
 
         int number = 1;
-        List<Guid> listId = new List<Guid>();
+        List<Guid> listId = new();
         foreach (var oneCase in cases)
         {
             var status = await _context.Statuses.FindAsync(oneCase.StatusId);
@@ -294,7 +295,7 @@ internal class MenuService
             Console.Write("Status <nr> to change the case-status  ");
             foreach (var status in await _statusService.GetAllAsync())
             {
-                Console.Write($" {status.Id} {status.StatusType}");
+                Console.Write($" {status.Id}: {status.StatusType}");
             }
 
             Console.WriteLine();
