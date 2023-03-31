@@ -4,28 +4,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ITS_Project.Services;
 
+
+
 internal class StatusService
 {
     private readonly DataContext _context = new();
 
-    public async Task InitAsync()
+    public async Task InitializeAsync()
     {
-        var statusStates = new List<StatusEntity>();
-        {
-            new StatusEntity() { Id = 1, StatusType = "Not engaged" };
+        var statusesVariations = new List<StatusEntity>()
+            {
+                new StatusEntity { Id = 1, StatusType = "Not started"},
+                new StatusEntity { Id = 2, StatusType = "In progress" },
+                new StatusEntity { Id = 3, StatusType = "Closed" },
+            };
 
-            new StatusEntity() { Id = 2, StatusType = "Finished" };
-
-            new StatusEntity() { Id = 3, StatusType = "Ongoing" };
-
-        };
-
-        await _context.AddRangeAsync(statusStates);
-
+        await _context.AddRangeAsync(statusesVariations);
         await _context.SaveChangesAsync();
-
-
     }
+
     public async Task<IEnumerable<StatusEntity>> GetAllAsync()
     {
         return await _context.Statuses.ToListAsync();
@@ -33,8 +30,6 @@ internal class StatusService
 
     public async Task<StatusEntity> GetAsync(int id)
     {
-
         return await _context.Statuses.FirstOrDefaultAsync(x => x.Id == id) ?? null!;
-
     }
 }

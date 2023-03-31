@@ -148,8 +148,8 @@ internal class MenuService
             Console.WriteLine("{0,-5}{1,-30}{2,-20}{3,-20}{4,-20}",
                 number,
                 oneCase.Subject,
-                status.StatusType,
-                user.FirstName,
+                status?.StatusType,
+                user?.FirstName,
                 oneCase.Created.ToString("yyyy-MM-dd HH:mm"));
             listId.Add(oneCase.Id);
             number++;

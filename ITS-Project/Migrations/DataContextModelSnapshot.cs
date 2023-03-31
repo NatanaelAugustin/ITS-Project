@@ -80,10 +80,7 @@ namespace ITS_Project.Migrations
             modelBuilder.Entity("ITS_Project.Models.Entities.StatusEntity", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("StatusType")
                         .IsRequired()
