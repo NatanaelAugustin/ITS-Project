@@ -15,7 +15,7 @@ internal class CommentService
         var commentEntity = new CommentEntity
         {
             CaseId = createComment.CaseId,
-            CommentText = createComment.CommentText,
+            CommentText = createComment.CommentText
         };
 
         await _context.AddAsync(commentEntity);

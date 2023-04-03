@@ -10,7 +10,7 @@ internal class StatusEntity
     public int Id { get; set; }
     public string StatusType { get; set; } = null!;
 
-    public ICollection<CaseEntity> Cases { get; set; } = new List<CaseEntity>();
+    public ICollection<CaseEntity> Cases { get; set; } = new HashSet<CaseEntity>();
 
 
 }

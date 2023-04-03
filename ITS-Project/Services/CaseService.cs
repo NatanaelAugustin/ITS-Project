@@ -35,7 +35,7 @@ internal class CaseService
     // TODO: hmmm se hur det har blir 
     public async Task<CaseEntity> GetAsync(Guid id)
     {
-        return await _context.Cases!
+        return await _context.Cases
             .Include(x => x.Comments)
             .Include(x => x.User)
             .Include(x => x.Status)

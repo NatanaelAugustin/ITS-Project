@@ -1,8 +1,8 @@
 ﻿using ITS_Project.Services;
 
 StatusService statusService = new();
-MenuService menuService = new();
+UIService menuService = new();
 
 await statusService.InitializeAsync();
-await menuService.MainMenu();
+await menuService.TicketsOverview();
 
