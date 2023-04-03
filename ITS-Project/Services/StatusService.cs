@@ -2,7 +2,7 @@
 using ITS_Project.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace IssuesGalore.Services;
+namespace ITS_Project.Services;
 
 internal class StatusService
 {

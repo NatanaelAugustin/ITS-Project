@@ -1,6 +1,5 @@
 ﻿using ITS_Project.Services;
 
-var ui = new MenuService();
+var start = new MenuService();
 
-
-await ui.MainMenu();
+await start.MainMenu();
