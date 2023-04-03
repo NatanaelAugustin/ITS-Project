@@ -17,7 +17,6 @@ internal class UserService
             LastName = createUser.LastName,
             Email = createUser.Email,
             PhoneNumber = createUser.PhoneNumber,
-
         };
 
         await _context.AddAsync(userEntity);
@@ -35,6 +34,4 @@ internal class UserService
     {
         return await _context.Users.FirstOrDefaultAsync(x => x.Email == email) ?? null!;
     }
-
-
 }

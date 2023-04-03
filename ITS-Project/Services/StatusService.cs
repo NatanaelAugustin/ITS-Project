@@ -2,9 +2,7 @@
 using ITS_Project.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace ITS_Project.Services;
-
-
+namespace IssuesGalore.Services;
 
 internal class StatusService
 {
@@ -12,14 +10,14 @@ internal class StatusService
 
     public async Task InitializeAsync()
     {
-        var statusesVariations = new List<StatusEntity>()
+        var statuses = new List<StatusEntity>()
             {
-                new StatusEntity { Id = 1, StatusType = "Not started"},
-                new StatusEntity { Id = 2, StatusType = "In progress" },
-                new StatusEntity { Id = 3, StatusType = "Closed" },
+                new StatusEntity { Id = 1, StatusType = "Pending"},
+                new StatusEntity { Id = 2, StatusType = "Ongoing" },
+                new StatusEntity { Id = 3, StatusType = "Finished" },
             };
 
-        await _context.AddRangeAsync(statusesVariations);
+        await _context.AddRangeAsync(statuses);
         await _context.SaveChangesAsync();
     }
 

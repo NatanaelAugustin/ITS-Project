@@ -14,6 +14,6 @@ internal class CaseEntity
     public Guid UserId { get; set; }
     public UserEntity User { get; set; } = null!;
 
-    public ICollection<CommentEntity> Comments { get; set; } = new HashSet<CommentEntity>();
+    public ICollection<CommentEntity> Comments { get; set; } = new List<CommentEntity>();
 
 }

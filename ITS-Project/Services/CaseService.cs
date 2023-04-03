@@ -32,7 +32,6 @@ internal class CaseService
             .OrderByDescending(x => x.Created)
             .ToListAsync();
     }
-    // TODO: hmmm se hur det har blir 
     public async Task<CaseEntity> GetAsync(Guid id)
     {
         return await _context.Cases

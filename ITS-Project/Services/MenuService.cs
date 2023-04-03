@@ -1,4 +1,5 @@
-﻿using ITS_Project.Contexts;
+﻿using IssuesGalore.Services;
+using ITS_Project.Contexts;
 using ITS_Project.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -13,6 +14,10 @@ internal class MenuService
     private readonly UserService _userService = new();
     private readonly CaseService _caseService = new();
 
+    private void PrintLine()
+    {
+        Console.WriteLine("==================================================================================================================");
+    }
 
 
     private static string CheckIfValid(string prompt)
@@ -35,7 +40,8 @@ internal class MenuService
     public async Task CreateCaseMenu()
     {
         Console.Clear();
-        Console.WriteLine("######## User details ############");
+        Console.WriteLine("###### User details ######");
+        PrintLine();
         var email = CheckIfValid("Email :");
         var user = await _userService.GetByEmailAsync(email);
 
@@ -43,15 +49,16 @@ internal class MenuService
         {
             var firstName = CheckIfValid("First name: ");
             var lastName = CheckIfValid("Last name: ");
-            var phoneNumber = CheckIfValid("Phonenumber: ");
+            var phoneNumber = CheckIfValid("Phone-number: ");
 
             user = await _userService.CreateAsync(new CreateUser(firstName, lastName, email, phoneNumber));
         }
 
-        Console.WriteLine("=====================================");
+        PrintLine();
         Console.WriteLine($"Welcome {user.FirstName}!");
         Console.WriteLine();
-        Console.WriteLine("########### Case details ########");
+        Console.WriteLine("###### Case details ######");
+        PrintLine();
 
         var subject = CheckIfValid("Case subject: ");
         var description = CheckIfValid("Case description: ");
@@ -61,8 +68,7 @@ internal class MenuService
         if (oneCase != null)
         {
             Console.WriteLine();
-            Console.WriteLine($" You succesfullfy generated a case witn case number : {oneCase.Id} ");
-            Console.WriteLine("Press any key to return to the main menu");
+            Console.WriteLine($" You created a new case with number : {oneCase.Id} ");
         }
     }
 
@@ -137,7 +143,6 @@ internal class MenuService
     public async Task<List<Guid>> ShowCasesAsync()
     {
         var cases = await _context.Cases.ToListAsync();
-        Console.WriteLine("## Existing Cases ##");
         Console.WriteLine("{0,-5}{1,-30}{2,-20}{3,-20}{4,-20}", "No.", "Subject", "Status", "User", "Created");
 
         int number = 1;
@@ -163,7 +168,8 @@ internal class MenuService
         while (true)
         {
             Console.Clear();
-            Console.WriteLine("###########   All Cases   ###################");
+            Console.WriteLine("######   All Cases   ######");
+            PrintLine();
             var cases = await _caseService.GetAllCasesAsync();
             List<Guid> idList = new();
             if (cases.IsNullOrEmpty())
@@ -174,15 +180,20 @@ internal class MenuService
             else
             {
                 idList = await ShowCasesAsync();
+                PrintLine();
             }
-            Console.WriteLine("###########  Commands  ##################");
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("###### Options  ######");
+            PrintLine();
             if (!cases.IsNullOrEmpty())
             {
-                Console.WriteLine("type <open> + <nr> to show case details");
+                Console.WriteLine("type <open> to show case details");
 
             }
             Console.WriteLine("type <new> to add a new case");
             Console.WriteLine("type <exit> to close program");
+            PrintLine();
             Console.WriteLine();
             Console.Write(">");
 
@@ -268,40 +279,43 @@ internal class MenuService
             }
 
             Console.Clear();
-            Console.WriteLine("############# Case details #############");
+            Console.WriteLine("###### Case details ######");
+            PrintLine();
             Console.WriteLine("ID :" + $"{caseId}");
-            Console.WriteLine("Tennant :" + $"{onecase.User.FirstName}" + " " + $"{onecase.User.LastName}" + " " + $"{onecase.User.Email}" + " " + $"{onecase.User.PhoneNumber}");
+            Console.WriteLine("Tennant :" + $"{onecase.User.FirstName}" + $"{onecase.User.LastName}" + " | " + $"{onecase.User.Email}" + " | " + $"{onecase.User.PhoneNumber} ");
             Console.WriteLine("Created :" + $"{onecase.Created}");
             Console.WriteLine("Status :" + $"{onecase.Status.StatusType}");
             Console.WriteLine("Subject :" + $"{onecase.Subject}");
             Console.WriteLine("Descripton :" + $"{onecase.Description}");
             Console.WriteLine();
-            Console.WriteLine("############### Comments #################");
-
+            Console.WriteLine("###### Comments ######");
+            PrintLine();
             var comments = await _commentService.GetByCaseId(caseId);
             if (!comments.Any())
             {
-                Console.WriteLine("no comments added yet");
+                Console.WriteLine("This case has not been commented on yet");
                 Console.WriteLine();
             }
             foreach (var oneComment in comments)
             {
                 Console.WriteLine($"{oneComment.CommentText}");
                 Console.WriteLine(oneComment.Created);
-                Console.WriteLine("============================");
+                PrintLine();
             }
-
-            Console.WriteLine("#Commands#");
-            Console.Write("Status <nr> to change the case-status  ");
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("###### Options ######");
+            PrintLine();
+            Console.Write("Type <status> to change the case-status  ");
             foreach (var status in await _statusService.GetAllAsync())
             {
-                Console.Write($" {status.Id}: {status.StatusType}");
+                Console.Write($" | {status.Id}: | {status.StatusType}|");
             }
 
             Console.WriteLine();
-            Console.WriteLine("type <comment> to add comment");
-            Console.WriteLine("type <delete> to remove case");
-            Console.WriteLine("type <exit> to navigate to mainscreen");
+            Console.WriteLine("Type <comment> to add comment");
+            Console.WriteLine("Type <remove> to remove case");
+            Console.WriteLine("Type <back> to navigate to mainscreen");
             Console.WriteLine();
 
             Console.Write("Type here >");
@@ -322,11 +336,11 @@ internal class MenuService
                     await AddComment(caseId, args);
                     break;
 
-                case "delete":
+                case "remove":
                     if (await DeleteCase(caseId)) ;
                     return;
 
-                case "exit":
+                case "back":
                     return;
 
                 default:
