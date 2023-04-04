@@ -1,5 +1,6 @@
 ﻿using ITS_Project.Contexts;
 using ITS_Project.Models;
+using ITS_Project.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -13,7 +14,7 @@ internal class MenuService
     private readonly UserService _userService = new();
     private readonly CaseService _caseService = new();
 
-    public async Task Getdata()
+    public async Task GetdataAsync()
     {
         Console.WriteLine("Waiting for database...");
 
@@ -37,7 +38,7 @@ internal class MenuService
             Console.Write(prompt);
             var input = Console.ReadLine();
 
-            if (input == null || input == "")
+            if (string.IsNullOrEmpty(input))
             {
                 Console.WriteLine(" Submit a value please");
                 continue;
@@ -83,9 +84,14 @@ internal class MenuService
         }
     }
 
-    public async Task UpdateCaseStatus(Guid caseId, string args)
+    public async Task UpdateCaseStatus(Guid caseId, string? args)
     {
-        if (args.IsNullOrEmpty())
+        if (caseId == null)
+        {
+            throw new ArgumentNullException(nameof(caseId), "Case ID cannot be null.");
+        }
+
+        if (string.IsNullOrWhiteSpace(args))
         {
             Console.WriteLine("Options ");
             var statuses = await _statusService.GetAllAsync();
@@ -94,45 +100,58 @@ internal class MenuService
                 Console.WriteLine($" {newStatus.Id} = {newStatus.StatusType}");
             }
             Console.WriteLine("Please enter a new status ID ");
-            Console.Write("> ");
+            Console.WriteLine("> ");
             args = Console.ReadLine()?.Trim();
         }
 
         if (!int.TryParse(args, out int statusId))
         {
             Console.WriteLine("Error: Could not find that status ID ");
-            Console.ReadKey();
-            return;
+            throw new ArgumentException("Invalid argument: status ID must be an integer.");
         }
 
         var status = await _statusService.GetAsync(statusId);
         if (status == null)
         {
             Console.WriteLine($"Error: Cant find a status connected to that {statusId} ");
-            Console.ReadKey();
-            return;
+            throw new InvalidOperationException("Invalid operation: status ID does not exist.");
         }
 
         var updatedCase = await _caseService.UpdateCaseAsync(caseId, statusId);
         if (updatedCase == null)
         {
             Console.WriteLine("Error: Could not update that specific case ");
-            Console.ReadKey();
-            return;
+            throw new InvalidOperationException("Invalid operation: could not update the case.");
         }
 
         Console.WriteLine($" Case {updatedCase.Id} updated with status '{status.StatusType}'");
-        Console.WriteLine("Press any key to continue...");
-        Console.ReadKey();
     }
+
+    private const int MaxCommentLength = 1000;
     public async Task WriteComment(Guid caseId)
     {
-        Console.WriteLine("Enter your comment");
-        string comment = Console.ReadLine();
 
-        if (string.IsNullOrEmpty(comment))
+        Console.WriteLine("Enter your comment");
+        string? comment;
+        try
+        {
+            comment = Console.ReadLine();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error reading comment: {ex.Message}");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(comment))
         {
             Console.WriteLine("Error: Comment cannot be empty");
+            return;
+        }
+
+        if (comment.Length > MaxCommentLength)
+        {
+            Console.WriteLine($"Error: Comment length cannot exceed {MaxCommentLength} characters");
             return;
         }
 
@@ -149,53 +168,40 @@ internal class MenuService
         }
     }
 
-    public async Task<bool> DeleteCase(Guid caseId)
+
+    public async Task<bool> RemoveCase(Guid caseId)
     {
         Console.WriteLine();
-        Console.WriteLine("Would you like to delete this case? (Y/N) ");
+        Console.WriteLine("Are you sure you want to remove this case? (Y/N) ");
         Console.Write("> ");
-        string input = Console.ReadLine()?.Trim().ToLower();
+        string? input = Console.ReadLine()?.Trim();
 
-        if (input == "y" || input == "yes")
+        if (!(!input.Equals("y", StringComparison.OrdinalIgnoreCase) && !input.Equals("yes", StringComparison.OrdinalIgnoreCase)))
         {
             var deletedCase = await _caseService.DeleteCaseAsync(caseId);
             Console.WriteLine($"Case {deletedCase.Id} has been removed");
-            Console.ReadKey();
             return true;
+        }
 
-        }
-        else if (input == "n" || input == "no")
-        {
-            Console.WriteLine("Deletion aborted");
-            Console.ReadKey();
-            return false;
-        }
-        else
-        {
-            Console.WriteLine("Invalid input. Please enter Y or N");
-            Console.ReadKey();
-            return false;
-        }
+        Console.WriteLine("Action Aborted");
+        return false;
     }
-    public async Task<List<Guid>> DisplayCasesAsync()
+    public static List<Guid> DisplayCases(IEnumerable<CaseEntity> cases)
     {
-        var cases = await _context.Cases.ToListAsync();
+        const int noWidth = 5;
+        const int subjectWidth = 30;
+        const int statusWidth = 20;
+        const int userWidth = 20;
+        const int createdWidth = 20;
 
         Console.WriteLine("{0,-5}{1,-30}{2,-20}{3,-20}{4,-20}", "No.", "Subject", "Status", "User", "Created");
 
         int number = 1;
-        List<Guid> listId = new();
+        var listId = new List<Guid>();
         foreach (var oneCase in cases)
         {
-            var status = await _context.Statuses.FindAsync(oneCase.StatusId);
-            var user = await _context.Users.FindAsync(oneCase.UserId);
-            Console.WriteLine("{0,-5}{1,-30}{2,-20}{3,-20}{4,-20}",
-                number,
-                oneCase.Subject,
-                status?.StatusType,
-                user?.FirstName,
-                oneCase.Created.ToString("yyyy-MM-dd HH:mm"));
             listId.Add(oneCase.Id);
+            Console.WriteLine($"{number,-noWidth}{oneCase.Subject,-subjectWidth}{oneCase.Status.StatusType,-statusWidth}{oneCase.User.FirstName,-userWidth}{oneCase.Created.ToString("yyyy-MM-dd HH:mm"),-createdWidth}");
             number++;
         }
         return listId;
@@ -217,7 +223,7 @@ internal class MenuService
             }
             else
             {
-                idList = await DisplayCasesAsync();
+                idList = DisplayCases(cases);
                 PrintLine();
             }
             Console.WriteLine();
@@ -369,7 +375,7 @@ internal class MenuService
                     break;
 
                 case "remove":
-                    if (await DeleteCase(caseId)) ;
+                    if (await RemoveCase(caseId)) ;
                     return;
 
                 case "back":

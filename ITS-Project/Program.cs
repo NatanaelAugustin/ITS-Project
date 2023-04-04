@@ -3,5 +3,5 @@
 var start = new MenuService();
 
 
-await start.Getdata();
+await start.GetdataAsync();
 await start.MainMenu();
