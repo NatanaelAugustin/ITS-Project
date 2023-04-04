@@ -207,7 +207,7 @@ internal class MenuService
         return listId;
     }
 
-    public async Task MainMenu()
+    public async Task ShowCaseMenu()
     {
         while (true)
         {
@@ -283,7 +283,7 @@ internal class MenuService
 
     public async Task CaseDetails(List<Guid> listId, string enteredNumber, int caseNumber)
     {
-        if (enteredNumber.IsNullOrEmpty())
+        if (string.IsNullOrWhiteSpace(enteredNumber))
         {
             Console.WriteLine("Enter a valid case number ");
             Console.ReadKey();
@@ -295,7 +295,6 @@ internal class MenuService
             Console.WriteLine("Error: Could not read the given input");
             Console.ReadKey();
             return;
-
         }
 
         Guid caseId;
@@ -303,9 +302,9 @@ internal class MenuService
         {
             caseId = listId.ElementAt(parsedNumber - 1);
         }
-        catch
+        catch (ArgumentOutOfRangeException)
         {
-            Console.WriteLine($"Error: Cant find that casenumber");
+            Console.WriteLine("Error: Can't find that case number");
             Console.ReadKey();
             return;
         }
@@ -313,56 +312,60 @@ internal class MenuService
         while (true)
         {
             var onecase = await _caseService.GetAsync(caseId);
-
             if (onecase == null)
             {
-                Console.WriteLine($"Error: Failed to fetch the case");
+                Console.WriteLine("Error: Failed to fetch the case");
                 Console.ReadKey();
                 return;
-
             }
 
             Console.Clear();
             Console.WriteLine("###### Case details ######");
             PrintLine();
-            Console.WriteLine("ID: " + $"{caseId}");
-            Console.WriteLine("Written by: " + $"{onecase.User.FirstName}" + " " + $"{onecase.User.LastName}" + " | " + $"{onecase.User.Email}" + " | " + $"{onecase.User.PhoneNumber} ");
-            Console.WriteLine("Created: " + $"{onecase.Created}");
-            Console.WriteLine("Status: " + $"{onecase.Status.StatusType}");
-            Console.WriteLine("Subject: " + $"{onecase.Subject}");
-            Console.WriteLine("Descripton: " + $"{onecase.Description}");
+            Console.WriteLine($"ID: {caseId}");
+            Console.WriteLine($"Written by: {onecase.User.FirstName} {onecase.User.LastName} | {onecase.User.Email} | {onecase.User.PhoneNumber}");
+            Console.WriteLine($"Created: {onecase.Created}");
+            Console.WriteLine($"Status: {onecase.Status.StatusType}");
+            Console.WriteLine($"Subject: {onecase.Subject}");
+            Console.WriteLine($"Description: {onecase.Description}");
             Console.WriteLine();
             Console.WriteLine("###### Comments ######");
             PrintLine();
+
             var comments = await _commentService.GetByCaseId(caseId);
             if (!comments.Any())
             {
                 Console.WriteLine("This case has not been commented on yet");
                 Console.WriteLine();
             }
+
             foreach (var oneComment in comments)
             {
                 Console.WriteLine($"{oneComment.CommentText}");
                 Console.WriteLine(oneComment.Created);
                 PrintLine();
             }
+
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine("###### Options ######");
             PrintLine();
-            Console.Write("Type <status> to change the case-status  ");
-            Console.WriteLine();
-            Console.WriteLine("Type <comment> to write a comment");
-            Console.WriteLine("Type <remove> to remove case");
-            Console.WriteLine("Type <back> to navigate to mainscreen");
+            Console.WriteLine("Type 'status' to change the case status");
+            Console.WriteLine("Type 'comment' to write a comment");
+            Console.WriteLine("Type 'remove' to remove case");
+            Console.WriteLine("Type 'back' to navigate to mainscreen");
             Console.WriteLine();
             Console.Write("> ");
 
-            var input = Console.ReadLine();
-            if (input == null || input == "")
+            var input = Console.ReadLine()?.Trim().ToLower();
+            if (string.IsNullOrWhiteSpace(input))
+            {
                 continue;
-            var option = input.Split(' ')[0].Trim().ToLower();
-            var args = string.Join(' ', input.Split().Skip(1));
+            }
+
+            var parts = input.Split(' ', 2);
+            var option = parts[0];
+            var args = parts.Length > 1 ? parts[1] : null;
 
             switch (option)
             {
@@ -375,8 +378,11 @@ internal class MenuService
                     break;
 
                 case "remove":
-                    if (await RemoveCase(caseId)) ;
-                    return;
+                    if (await RemoveCase(caseId))
+                    {
+                        return;
+                    }
+                    break;
 
                 case "back":
                     return;
@@ -386,9 +392,7 @@ internal class MenuService
                     Console.ReadKey();
                     break;
             }
-
         }
-
     }
 
 }
