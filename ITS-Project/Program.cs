@@ -2,4 +2,6 @@
 
 var start = new MenuService();
 
+
+await start.Getdata();
 await start.MainMenu();

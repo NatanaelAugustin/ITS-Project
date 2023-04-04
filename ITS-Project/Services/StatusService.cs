@@ -8,7 +8,7 @@ internal class StatusService
 {
     private readonly DataContext _context = new();
 
-    public async Task InitializeAsync()
+    public async Task StartAsync()
     {
         var statuses = new List<StatusEntity>()
             {
