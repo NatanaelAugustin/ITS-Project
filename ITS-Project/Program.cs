@@ -4,4 +4,5 @@ var start = new MenuService();
 
 
 await start.GetdataAsync();
-await start.ShowCaseMenu();
+await start.MainMenu();
+

@@ -57,7 +57,7 @@ internal class CaseService
         return caseEntity!;
     }
 
-    public async Task<CaseEntity> DeleteCaseAsync(Guid id)
+    public async Task<CaseEntity> RemoveCaseAsync(Guid id)
     {
         var caseEntity = await GetAsync(id);
 
