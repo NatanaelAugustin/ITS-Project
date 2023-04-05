@@ -1,4 +1,4 @@
-# Project Readme: ITS_Project
+# Project Readme: ITS_Project :notebook:
 This is a console-based Incident Tracking System (ITS) project created with C# .NET Core. It is a simple ITS tool that allows users to create, track and update cases. The system uses Microsoft's Entity Framework Core to interact with a database and provide basic CRUD (Create, Read, Update, Delete) functionalities.
 
 ## Getting Started
