@@ -17,12 +17,17 @@ internal class DataContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\natan\Programmering\Database\ITS-Project\Contexts\its-database.mdf;Integrated Security=True");
+        optionsBuilder.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\natan\Programmering\Database\ITS-Project\Contexts\Database-IssueTicketSystem.mdf;Integrated Security=True;Connect Timeout=30");
     }
 
-    public DbSet<StatusEntity> Statuses { get; set; }
-    public DbSet<UserEntity> Users { get; set; }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+    }
+
     public DbSet<CaseEntity> Cases { get; set; }
+    public DbSet<UserEntity> Users { get; set; }
     public DbSet<CommentEntity> Comments { get; set; }
+    public DbSet<StatusEntity> Statuses { get; set; }
 
 }

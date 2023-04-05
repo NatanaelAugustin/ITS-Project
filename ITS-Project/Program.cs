@@ -1,13 +1,8 @@
 ﻿using ITS_Project.Services;
 
-StatusService statusService = new();
-MenuService menuService = new();
+var start = new MenuService();
 
-await statusService.InitAsync();
 
-while (true)
-{
-    Console.Clear();
-    await menuService.MainMenu();
-    Console.ReadKey();
-}
+await start.GetdataAsync();
+await start.MainMenu();
+
