@@ -25,7 +25,9 @@ Display All Cases: To display all cases in the system, select option 5 from the 
 5. Quit: To exit the program, select option 6 from the main menu.
 
 ## Technologies
-C# .NET
-Entity Framework Core
-Microsoft IdentityModel.Tokens
+- C# .NET
+- Entity Framework Core
+- Microsoft IdentityModel.Tokens
+
+## Author
 This project was created by Natanael Augustin as a project for a course - DataLagring whilst studying to become a web developer at EC-Utbildning Gothenburg.
